@@ -44,29 +44,22 @@ db.games
         },
         {
             $addFields: {
-                eloArray: {
-                    $objectToArray: "$newElo"
+              totalScore: { $sum: "$score" }
+            }
+        },
+        {
+            $group: {
+                _id: "$teamName",
+                firstScore: {
+                    $first: {
+                        sum: "$totalScore",
+                    }
                 }
             }
         },
-        // {
-        //     $project: {
-        //         teamName: "$teamName",
-        //         elo: {
-        //             $reduce: {
-        //                 input: "$eloArray",
-        //                 initialValue: 0,
-        //                 in: {
-        //                     $add: [
-        //                         "$$value",
-        //                         // lookup elo
-        //                         // match against username
-
-        //                         // { $arrayElemAt: ["$teams", 0] },
-        //                     ]
-        //                 }
-        //             }
-        //         }
-        //     }
-        // }
+        {
+            $project: {
+                totalScore: "$firstScore.sum",
+            }
+        }
     ])
